@@ -784,6 +784,9 @@ public:
 
     void getFile(const QString& name, const std::filesystem::path& path, const ObjStoreOptions& options) const;
 
+    /// Delete the object with the given name from the bucket. Throws if the object does not exist.
+    void deleteObject(const QString& name) const;
+
 private:
     explicit ObjectStore(QObject* parent) : QObject(parent) {}
 

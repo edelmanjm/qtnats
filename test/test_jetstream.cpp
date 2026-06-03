@@ -463,6 +463,22 @@ void JetStreamTestCase::readWriteObject() {
             QVERIFY2(natsCli.exitCode() == 0, "nats CLI failed (see output above)");
         }
 
+        // Delete an object and verify it no longer resolves, but is reported as deleted when explicitly requested.
+        {
+            objectStore->deleteObject(asBytes);
+
+            bool threw = false;
+            try {
+                objectStore->getBytes(asBytes, {});
+            } catch (const QException&) {
+                threw = true;
+            }
+            QVERIFY2(threw, "getBytes should throw for a deleted object");
+
+            const auto storeInfo = objectStore->getInfo(asBytes, {.showDeleted = true});
+            QVERIFY(storeInfo.deleted);
+        }
+
         // Cleanup
         js->deleteObjectStore(bucket);
     } catch (const QException& e) {
