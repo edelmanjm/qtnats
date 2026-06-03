@@ -353,3 +353,7 @@ void ObjectStore::getFile(
         checkError(objStore_GetFile(m_objStore, name.toUtf8().constData(), path.string().c_str(), &opts));
     });
 }
+
+void ObjectStore::deleteObject(const QString& name) const {
+    checkError(objStore_Delete(m_objStore, name.toUtf8().constData()));
+}
