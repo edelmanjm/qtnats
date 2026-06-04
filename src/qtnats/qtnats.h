@@ -787,6 +787,10 @@ public:
     /// Delete the object with the given name from the bucket. Throws if the object does not exist.
     void deleteObject(const QString& name) const;
 
+    /// List metadata for every object in the bucket. Deleted objects are included only when
+    /// options.showDeleted is set. Returns an empty list for an empty bucket.
+    [[nodiscard]] QList<ObjStoreInfo> list(const ObjStoreOptions& options = {}) const;
+
 private:
     explicit ObjectStore(QObject* parent) : QObject(parent) {}
 
