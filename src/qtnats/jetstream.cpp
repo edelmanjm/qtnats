@@ -357,3 +357,26 @@ void ObjectStore::getFile(
 void ObjectStore::deleteObject(const QString& name) const {
     checkError(objStore_Delete(m_objStore, name.toUtf8().constData()));
 }
+
+QList<ObjStoreInfo> ObjectStore::list(const ObjStoreOptions& options) const {
+    return convertAndHandle(options, [&](objStoreOptions& opts) {
+        objStoreInfoList* cList = nullptr;
+        const natsStatus s = objStore_List(&cList, m_objStore, &opts);
+        // An empty bucket reports NATS_NOT_FOUND rather than an empty list.
+        if (s == NATS_NOT_FOUND) {
+            return QList<ObjStoreInfo>{};
+        }
+        checkError(s);
+
+        if (cList == nullptr) {
+            return QList<ObjStoreInfo>{};
+        }
+        QList<ObjStoreInfo> result;
+        result.reserve(cList->Count);
+        for (int i = 0; i < cList->Count; ++i) {
+            result.append(fromC(*cList->List[i]));
+        }
+        objStoreInfoList_Destroy(cList);
+        return result;
+    });
+}
