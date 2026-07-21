@@ -380,3 +380,9 @@ QList<ObjStoreInfo> ObjectStore::list(const ObjStoreOptions& options) const {
         return result;
     });
 }
+
+ObjStoreStatus ObjectStore::status() const {
+    objStoreStatus* cStatus = nullptr;
+    checkError(objStore_Status(&cStatus, m_objStore));
+    return fromC(ObjStoreStatusPtr(cStatus));
+}
